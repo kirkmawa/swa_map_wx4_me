@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Wx4Me Interactive Alert Map</title>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script>
+
+      // initialize map
+      function showMap() {
+        map = new L.Map("map", {
+          center: new L.LatLng(39.098934, -84.498618), // on a bridge between Cincinnati and Newport. 20171028 :)
+          zoom: 9,
+          maxZoom: 16
+        });
+
+        // Add Wx4Me disclaimer to map attribution control
+        map.attributionControl.addAttribution('<a href="https://wx4.me/ds" target="_blank" style="color: red; text-decoration: underline;">Disclaimer</a> - For more information, visit <a href="https://wx4.me" target="_blank" style="color: red; text-decoration: underline;">Weather4Me</a>');
+
+        // add map tiles from Stamen
+        stamentiles = L.tileLayer('//stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+          attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+          maxZoom: 16
+        }).addTo(map);
+
+        // Add a control to get current location
+        locateControl = L.control.locate({
+          keepCurrentZoomLevel: true,
+          initialZoomLevel: 10
+        }).addTo(map);
+
+        // Load the NEXRAD map layer
+        loadNexrad();
+
+        // Load warning polygons
+        loadWarnings();
+        
+        // Block warning reload if popup is open
+        map.on('popupopen', function(event){
+          console.log("Popup is open"); 
+          window.popIsOpen = true;
+          document.getElementById("blockedWarning").style.visibility = "visible";
+        });
+
+        map.on('popupclose', function(event){
+          console.log("Popup is closed"); 
+          window.popIsOpen = false;
+          document.getElementById("blockedWarning").style.visibility = "hidden";
+        });
+
+      }
+
+      // Load NEXRAD map layer
+      function loadNexrad () {
+        console.log("Loading NEXRAD from NWS MapServer");
+        window.nexrad = L.tileLayer.wms("https://mapservices.weather.noaa.gov/eventdriven/services/radar/radar_base_reflectivity/MapServer/WMSServer", {
+          layers: '1',
+          format: 'image/png',
+          transparent: true,
+          attribution: "Radar data: NOAA",
+          opacity: 0.5
+        }).addTo(map);
+      }
+
+      // Load warning polygons
+      function loadWarnings() {
+        console.log("Loading warning polygons from NWS API...");
+        
+        // Get GeoJSON object from NWS API
+        var wwaxhr = $.getJSON("https://api.weather.gov/alerts?active=true", function (data) {
+          wwainfo = data;
+        }).done(function () {
+          // Add polygon display layer
+          window.wwadisp = new L.geoJSON(wwainfo, {
+
+            // Color polygons based on event info
+            style: function(feature){
+              // Fuchsia polygons for tornado emergency
+              if (feature.properties.description.search('/tornado(.{1,4})emergency/i') >= 0) {
+                return {color: "#ff00ff"};
+              }
+
+              // todo: orange for PDS svr, hotpink for PDS tor
+
+              // Standard polygon colors
+              switch (feature.properties.event) {
+                case 'Severe Thunderstorm Warning': return {color: "#ffff00"};
+                case 'Tornado Warning': return {color: "#ff0000"};
+                case 'Flash Flood Warning': return {color: "#008800"};
+              }
+            },
+
+            // We only want tornado/severe tstorm/flash flood warnings for now
+            filter: function(feature, layer) {
+              if (feature.properties.event == "Tornado Warning" || feature.properties.event == "Severe Thunderstorm Warning" || feature.properties.event == "Flash Flood Warning") {
+                return true;
+              } else {
+                return false;
+              }
+            },
+
+            // Bind a popup with warning info to each polygon
+            onEachFeature: function(feature,layer) {
+
+              // Define some variables to hold various tags that may be on a warning
+              var windThreat = "";
+              var hailThreat = "";
+              var thunderstormDamageThreat = "";
+
+              // Check for max wind gust and include if found
+              if (feature.properties.parameters.maxWindGust) {
+                windThreat = "<b>Max Winds:</b> " + feature.properties.parameters.maxWindGust + "<br />";
+              }
+
+              // Check for max hail size and include if found
+              if (feature.properties.parameters.maxHailSize) {
+                hailThreat = "<b>Max Hail Size:</b> " + feature.properties.parameters.maxHailSize + "&quot;<br />";
+              }
+
+              // Check for tstorm damage threat and include if found
+              if (feature.properties.parameters.thunderstormDamageThreat) {
+                thunderstormDamageThreat = "<b>Thunderstorm Damage Threat: " + feature.properties.parameters.thunderstormDamageThreat[0] + "</b><br />";
+              }
+
+              // todo: tornadoDetection, tornadoDamageThreat ... need to verify information in GeoJSON once these things happen
+
+              // Construct the popup and its contents
+              layer.bindPopup("<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>", {maxWidth: 700, maxHeight: 500});
+            },
+            attribution: "Warning polygons from NOAA"
+          }).addTo(map);
+        });
+      }
+
+      // Reload warning polygons
+      function reloadWarningMap() {
+        if (window.popIsOpen == true) {
+          // Don't reload if a popup is open, reloading will close the popup
+          console.log("Polygon reload blocked due to open popup");
+        } else {
+          // Show info pane
+          window.document.getElementById("infoPane").innerHTML = "Reloading warnings...";
+          window.document.getElementById("infoPane").style.visibility = "visible";
+
+          console.log("Initiating warning polygon reload...");
+
+          // Remove wwa display layer
+          window.wwadisp.remove();
+
+          // Reload warnings
+          loadWarnings();
+
+          // Hide info pane
+          window.document.getElementById("infoPane").innerHTML = "";
+          window.document.getElementById("infoPane").style.visibility = "hidden";
+      }
+      }
+
+      // Reload NEXRAD mosaic layer
+      function reloadNexrad() {
+        // show info pane
+        window.document.getElementById("infoPane").innerHTML = "Reloading NEXRAD...";
+        window.document.getElementById("infoPane").style.visibility = "visible";
+
+        console.log("Reloading NEXRAD...");
+
+        // Remove map layer
+        window.nexrad.remove();
+
+        // Run function that loads NEXRAD imagery
+        loadNexrad();
+
+        // Hide info pane
+        window.document.getElementById("infoPane").innerHTML = "";
+        window.document.getElementById("infoPane").style.visibility = "hidden";
+      }
+
+      // Tasks to perform once page is loaded
+      $(window).on("load", function() {
+        // Show the map
+        showMap();
+
+        // Set reload intervals of 1 minute for warning polygons and 5 minutes for NEXRAD
+        warnreloadInterval = setInterval(reloadWarningMap, 60000);
+        nexradreloadInterval = setInterval(reloadNexrad, 300000);
+      })
+
+    </script>
+
+    <!-- Include Leaflet code -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+
+    <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
+
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+    integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+    crossorigin=""></script>
+
+    <!-- Include Leaflet locate control code-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+    <style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      html, body, #map {
+        height: 100%;
+        width: 100vw;
+      }
+      #logoContainer {
+        position: fixed;
+        z-index: 800;
+        bottom: 0px;
+        left: 0px;
+        padding: 5px;
+        background: rgba(255, 255, 255, 0.8);
+      }
+      #blockedWarning {
+        position: fixed;
+        z-index: 1900;
+        top: 0px;
+        right: 0px;
+        padding: 5px;
+        background-color: red;
+        color: white;
+        visibility: hidden;
+      }
+      #infoPane {
+        position: fixed;
+        z-index: 1899;
+        top: 0px;
+        right: 0px;
+        padding: 5px;
+        background: rgba(255, 255, 255, 0.8);
+        visibility: hidden;
+      }
+    </style>
+
+    <!-- MS Clarity analytics -->
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "d53eri8pqu");
+    </script>
+
+  </head>
+  <body>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <div id="map"></div>
+    <div id="logoContainer"><img src="/images/wx4me_banner_2020.png" height="50" /></div>
+    <div id="blockedWarning">Reload blocked due to open popup!</div>
+    <div id="infoPane"></div>
+  </body>
+</html>
