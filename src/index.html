@@ -195,18 +195,8 @@
         window.document.getElementById("infoPane").style.visibility = "hidden";
       }
 
-      // Tasks to perform once page is loaded
-      $(window).on("load", function() {
-        // Show the map
-        showMap();
-
-        // Set reload intervals of 1 minute for warning polygons and 5 minutes for NEXRAD
-        warnreloadInterval = setInterval(reloadWarningMap, 60000);
-        nexradreloadInterval = setInterval(reloadNexrad, 300000);
-      })
-
-      // Move logo out of the way of the attribution control 
-      $(window).resize(function() {
+      // Function to move logo out of the way of the attribution control
+      function checkLogoPos() {
         logoContainerObj = document.getElementById("logoContainer");
         // Check width of window vs. width of attribution control
         if (map.attributionControl._container.offsetWidth < (window.innerWidth - logoContainerObj.offsetWidth)) {
@@ -216,7 +206,22 @@
           // Attribution control is in the way
           logoContainerObj.style.paddingBottom = (map.attributionControl._container.offsetHeight + 5) + "px";
         }
-      });
+      }
+
+      // Tasks to perform once page is loaded
+      $(window).on("load", function() {
+        // Show the map
+        showMap();
+
+        checkLogoPos();
+
+        // Set reload intervals of 1 minute for warning polygons and 5 minutes for NEXRAD
+        warnreloadInterval = setInterval(reloadWarningMap, 60000);
+        nexradreloadInterval = setInterval(reloadNexrad, 300000);
+      })
+
+      // Move logo out of the way of the attribution control 
+      $(window).resize(checkLogoPos);
 
     </script>
 
