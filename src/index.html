@@ -205,6 +205,19 @@
         nexradreloadInterval = setInterval(reloadNexrad, 300000);
       })
 
+      // Move logo out of the way of the attribution control 
+      $(window).resize(function() {
+        logoContainerObj = document.getElementById("logoContainer");
+        // Check width of window vs. width of attribution control
+        if (map.attributionControl._container.offsetWidth < (window.innerWidth - logoContainerObj.offsetWidth)) {
+          // Attribution control is not in the way
+          logoContainerObj.style.paddingBottom = "5px";
+        } else {
+          // Attribution control is in the way
+          logoContainerObj.style.paddingBottom = (map.attributionControl._container.offsetHeight + 5) + "px";
+        }
+      });
+
     </script>
 
     <!-- Include Leaflet code -->
