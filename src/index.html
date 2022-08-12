@@ -63,12 +63,21 @@
           console.log("Popup is open"); 
           window.popIsOpen = true;
           document.getElementById("blockedWarning").style.visibility = "visible";
+
+          // Replace URL fragment with VTEC of event for permalinking
+          parentPolygon = event.popup._source;
+          if (parentPolygon.feature.properties.parameters.VTEC) {
+            window.location.hash = "#" + parentPolygon.feature.properties.parameters.VTEC[0].replace(/\//g, '').replace(/\./g, '-');
+          }
         });
 
         map.on('popupclose', function(event){
           console.log("Popup is closed"); 
           window.popIsOpen = false;
           document.getElementById("blockedWarning").style.visibility = "hidden";
+
+          // Remove URL fragment
+          window.location.hash = '';
         });
 
       }
@@ -160,6 +169,11 @@
             },
             attribution: "Warning polygons from NOAA"
           }).addTo(map);
+
+          // If a specific event is in the URL fragment, open its popup
+          if (window.location.hash.length > 1 && window.location.hash != "#close") {
+            allPolygons[window.location.hash.substring(1)].openPopup();
+          }
         });
       }
 
