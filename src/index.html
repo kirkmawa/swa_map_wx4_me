@@ -41,7 +41,7 @@
         map.attributionControl.addAttribution('<a href="https://wx4.me/ds" target="_blank" style="color: red; text-decoration: underline;">Disclaimer</a> - For more information, visit <a href="https://wx4.me" target="_blank" style="color: red; text-decoration: underline;">Weather4Me</a>');
 
         // add map tiles from Stamen
-        stamentiles = L.tileLayer('//stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
+        stamentiles = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png', {
           attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
           maxZoom: 16
         }).addTo(map);
@@ -318,7 +318,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     <div id="map"></div>
-    <div id="logoContainer"><img src="/images/wx4me_banner_2020.png" height="50" /></div>
+    <div id="logoContainer"><img src="images/wx4me_banner_2020.png" height="50" /></div>
     <div id="blockedWarning">Reload blocked due to open popup!</div>
     <div id="infoPane"></div>
   </body>
