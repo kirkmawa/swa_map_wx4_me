@@ -26,6 +26,9 @@
 
     <script>
 
+      // Objects and variables
+      allPolygons = {};
+
       // initialize map
       function showMap() {
         map = new L.Map("map", {
@@ -85,6 +88,9 @@
       // Load warning polygons
       function loadWarnings() {
         console.log("Loading warning polygons from NWS API...");
+        
+        // Clear allPolygons object
+        allPolygons = {};
         
         // Get GeoJSON object from NWS API
         var wwaxhr = $.getJSON("https://api.weather.gov/alerts?active=true", function (data) {
@@ -146,6 +152,11 @@
 
               // Construct the popup and its contents
               layer.bindPopup("<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>", {maxWidth: 700, maxHeight: 500});
+
+              // Add layer to lookup object
+              if (feature.properties.parameters.VTEC) {
+                allPolygons[feature.properties.parameters.VTEC[0].replace(/\//g, '').replace(/\./g, '-')] = layer;
+              }
             },
             attribution: "Warning polygons from NOAA"
           }).addTo(map);
