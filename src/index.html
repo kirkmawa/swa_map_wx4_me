@@ -141,6 +141,7 @@
               var windThreat = "";
               var hailThreat = "";
               var thunderstormDamageThreat = "";
+              var tornadoDetection = "";
 
               // Check for max wind gust and include if found
               if (feature.properties.parameters.maxWindGust) {
@@ -157,10 +158,15 @@
                 thunderstormDamageThreat = "<b>Thunderstorm Damage Threat: " + feature.properties.parameters.thunderstormDamageThreat[0] + "</b><br />";
               }
 
-              // todo: tornadoDetection, tornadoDamageThreat ... need to verify information in GeoJSON once these things happen
+              // Check for tornadoDetection tag
+              if (feature.properties.parameters.tornadoDetection) {
+                tornadoDetection = "<b style='color: maroon;'>Tornado: " + feature.properties.parameters.tornadoDetection[0] + "</b><br />";
+              }
+
+              // todo: tornadoDamageThreat ... need to verify information in GeoJSON once these things happen
 
               // Construct the popup and its contents
-              layer.bindPopup("<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>", {maxWidth: 700, maxHeight: 500});
+              layer.bindPopup("<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>", {maxWidth: 700, maxHeight: 500});
 
               // Add layer to lookup object
               if (feature.properties.parameters.VTEC) {
