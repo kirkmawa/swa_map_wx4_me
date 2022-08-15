@@ -115,6 +115,11 @@
                 return {color: "#ff00ff"};
               }
 
+              // orange for svr with tornado possible tag 
+              if ((feature.properties.event == "Severe Thunderstorm Warning") && feature.properties.parameters.tornadoDetection) {
+                return {color: "#ff9900"};
+              }
+
               // todo: orange for PDS svr, hotpink for PDS tor
 
               // Standard polygon colors
