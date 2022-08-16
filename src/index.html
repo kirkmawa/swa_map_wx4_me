@@ -128,21 +128,21 @@
             style: function(feature){
               // Fuchsia polygons for tornado emergency
               if (feature.properties.description.search('/tornado(.{1,4})emergency/i') >= 0) {
-                return {color: "#ff00ff"};
+                return {color: "#ff00ff", pane: "tornadoEmergencyPane"};
               }
 
               // orange for svr with tornado possible tag 
               if ((feature.properties.event == "Severe Thunderstorm Warning") && feature.properties.parameters.tornadoDetection) {
-                return {color: "#ff9900"};
+                return {color: "#ff9900", pane: "pdsSvrPane"};
               }
 
               // todo: orange for PDS svr, hotpink for PDS tor
 
               // Standard polygon colors
               switch (feature.properties.event) {
-                case 'Severe Thunderstorm Warning': return {color: "#ffff00"};
-                case 'Tornado Warning': return {color: "#ff0000"};
-                case 'Flash Flood Warning': return {color: "#008800"};
+                case 'Severe Thunderstorm Warning': return {color: "#ffff00", pane: "svrPane"};
+                case 'Tornado Warning': return {color: "#ff0000", pane: "torPane"};
+                case 'Flash Flood Warning': return {color: "#008800", pane: "ffwPane"};
               }
             },
 
