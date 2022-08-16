@@ -52,6 +52,22 @@
           initialZoomLevel: 10
         }).addTo(map);
 
+        // Add panes for different warning polygons
+        ffwPane = map.createPane("ffwPane");
+        svrPane = map.createPane("svrPane");
+        pdsSvrPane = map.createPane("pdsSvrPane");
+        torPane = map.createPane("torPane");
+        pdsTorPane = map.createPane("pdsTorPane");
+        tornadoEmergencyPane = map.createPane("tornadoEmergencyPane");
+
+        // Set pane z-index values
+        ffwPane.style.zIndex = 401;
+        svrPane.style.zIndex = 402;
+        pdsSvrPane.style.zIndex = 403;
+        torPane.style.zIndex = 404;
+        pdsTorPane.style.zIndex = 405;
+        tornadoEmergencyPane.style.zIndex = 406;
+
         // Load the NEXRAD map layer
         loadNexrad();
 
