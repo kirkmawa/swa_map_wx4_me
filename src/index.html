@@ -203,6 +203,9 @@
                   maxHeight: maxPopupHeight
                 });
 
+                // Bind a tooltip with headline info
+                layer.bindTooltip(feature.properties.headline);
+
               // Add layer to lookup object
               if (feature.properties.parameters.VTEC) {
                 allPolygons[feature.properties.parameters.VTEC[0].replace(/\//g, '').replace(/\./g, '-')] = layer;
