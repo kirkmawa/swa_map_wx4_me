@@ -29,6 +29,15 @@
       // Objects and variables
       allPolygons = {};
 
+      // Compute some max popup sizes
+      if (window.innerWidth >= 700) {
+        maxPopupWidth = 700;
+      } else {
+        maxPopupWidth = window.innerWidth;
+      }
+
+      maxPopupHeight = window.innerHeight - 150;
+
       // initialize map
       function showMap() {
         map = new L.Map("map", {
@@ -187,7 +196,12 @@
               // todo: tornadoDamageThreat ... need to verify information in GeoJSON once these things happen
 
               // Construct the popup and its contents
-              layer.bindPopup("<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>", {maxWidth: 700, maxHeight: 500});
+              layer.bindPopup(
+                "<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>",
+                {
+                  maxWidth: maxPopupWidth, 
+                  maxHeight: maxPopupHeight
+                });
 
               // Add layer to lookup object
               if (feature.properties.parameters.VTEC) {
