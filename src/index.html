@@ -66,6 +66,7 @@
         svrPane = map.createPane("svrPane");
         pdsSvrPane = map.createPane("pdsSvrPane");
         torPane = map.createPane("torPane");
+        obsTorPane = map.createPane("obsTorPane");
         pdsTorPane = map.createPane("pdsTorPane");
         tornadoEmergencyPane = map.createPane("tornadoEmergencyPane");
 
@@ -74,8 +75,9 @@
         svrPane.style.zIndex = 402;
         pdsSvrPane.style.zIndex = 403;
         torPane.style.zIndex = 404;
-        pdsTorPane.style.zIndex = 405;
-        tornadoEmergencyPane.style.zIndex = 406;
+        obsTorPane.style.zIndex = 405;
+        pdsTorPane.style.zIndex = 406;
+        tornadoEmergencyPane.style.zIndex = 407;
 
         // Load the NEXRAD map layer
         loadNexrad();
@@ -138,6 +140,11 @@
               // Fuchsia polygons for tornado emergency
               if (feature.properties.description.search('/tornado(.{1,4})emergency/i') >= 0) {
                 return {color: "#ff00ff", pane: "tornadoEmergencyPane"};
+              }
+
+              // Dark violet polygons for observed tornado
+              if ((feature.properties.event == "Tornado Warning") && feature.properties.parameters.tornadoDetection && feature.properties.parameters.tornadoDetection[0].search('/observed/i') >= 0) {
+                return {color: "#9400d3", pane: "obsTorPane"};
               }
 
               // orange for svr with tornado possible tag 
