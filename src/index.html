@@ -194,10 +194,13 @@
               }
 
               // todo: tornadoDamageThreat ... need to verify information in GeoJSON once these things happen
+              if (feature.properties.parameters.tornadoDamageThreat) {
+                tornadoDamageThreat = "<b style='color: maroon;'>Tornado Damage Threat: " + feature.properties.parameters.tornadoDamageThreat[0] + "</b><br />";
+              }
 
               // Construct the popup and its contents
               layer.bindPopup(
-                "<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>",
+                "<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+tornadoDamageThreat+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>",
                 {
                   maxWidth: maxPopupWidth, 
                   maxHeight: maxPopupHeight
