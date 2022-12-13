@@ -138,12 +138,12 @@
             // Color polygons based on event info
             style: function(feature){
               // Fuchsia polygons for tornado emergency
-              if (feature.properties.description.search('/tornado(.{1,4})emergency/i') >= 0) {
+              if (feature.properties.description.search(/tornado(.{1,4})emergency/i) >= 0) {
                 return {color: "#ff00ff", pane: "tornadoEmergencyPane"};
               }
 
               // Dark violet polygons for observed tornado
-              if ((feature.properties.event == "Tornado Warning") && feature.properties.parameters.tornadoDetection && feature.properties.parameters.tornadoDetection[0].search('/observed/i') >= 0) {
+              if ((feature.properties.event == "Tornado Warning") && feature.properties.parameters.tornadoDetection && feature.properties.parameters.tornadoDetection[0].search(/observed/i) >= 0) {
                 return {color: "#9400d3", pane: "obsTorPane"};
               }
 
