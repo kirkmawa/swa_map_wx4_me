@@ -61,6 +61,20 @@
           initialZoomLevel: 10
         }).addTo(map);
 
+        // Add a legend control
+        legendControl = L.control({ position: "bottomright" });
+        legendControl.onAdd = function(map) {
+          var div = L.DomUtil.create("div", "legend");
+          div.innerHTML += "<h4>Legend</h4>";
+          div.innerHTML += '<i style="background: #FF00FF"></i><span>Tornado Emergency</span><br>';
+          div.innerHTML += '<i style="background: #9400D3"></i><span>Tornado Observed</span><br>';
+          div.innerHTML += '<i style="background: #FF0000"></i><span>Tornado Warning</span><br>';
+          div.innerHTML += '<i style="background: #FF9900"></i><span>Severe Thunderstorm (tornado possible)</span><br>';
+          div.innerHTML += '<i style="background: #FFFF00"></i><span>Severe Thunderstorm</span><br>';
+          div.innerHTML += '<i style="background: #008800"></i><span>Flash Flood</span><br>';
+          return div;
+        };
+
         // Add panes for different warning polygons
         ffwPane = map.createPane("ffwPane");
         svrPane = map.createPane("svrPane");
@@ -295,6 +309,14 @@
 
         checkLogoPos();
 
+        $("#leg-hide-link").on('click', function() {
+          map.removeControl(legendControl);
+        }); 
+
+        $("#leg-show-link").on('click', function() {
+          map.addControl(legendControl);
+        });
+
         // Set reload intervals of 1 minute for warning polygons and 5 minutes for NEXRAD
         warnreloadInterval = setInterval(reloadWarningMap, 60000);
         nexradreloadInterval = setInterval(reloadNexrad, 300000);
@@ -356,6 +378,43 @@
         background: rgba(255, 255, 255, 0.8);
         visibility: hidden;
       }
+
+      .legend {
+        padding: 4px 4px;
+        font: 11px Arial, Helvetica, sans-serif;
+        background: white;
+        background: rgba(255, 255, 255, 0.8);
+        /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+        /*border-radius: 5px;*/
+        line-height: 18px;
+        color: #555;
+      }
+      .legend h4 {
+        text-align: center;
+        font-size: 14px;
+        margin: 2px 12px 8px;
+        color: #777;
+      }
+
+      .legend span {
+        position: relative;
+        bottom: 2px;
+      }
+
+      .legend i {
+        width: 14px;
+        height: 14px;
+        float: left;
+        margin: 0 4px 0 0;
+        opacity: 0.7;
+        border: black 1px solid;
+      }
+
+      .legend i.icon {
+        background-size: 14px;
+        background-color: rgba(255, 255, 255, 1);
+      }
+
     </style>
 
     <!-- MS Clarity analytics -->
@@ -373,7 +432,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     <div id="map"></div>
-    <div id="logoContainer"><img src="images/wx4me_banner_2020.png" height="50" /></div>
+    <div id="logoContainer">
+      <img src="images/wx4me_banner_2020.png" height="50" /><br>
+      <div style="text-align: center; margin-top: 2px;">
+        <button id="leg-show-link">Show Legend</button>&nbsp;<button id="leg-hide-link">Hide Legend</button>
+      </div>
+    </div>
     <div id="blockedWarning">Reload blocked due to open popup!</div>
     <div id="infoPane"></div>
   </body>
