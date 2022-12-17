@@ -41,10 +41,14 @@
       // initialize map
       function showMap() {
         map = new L.Map("map", {
-          center: new L.LatLng(39.098934, -84.498618), // on a bridge between Cincinnati and Newport. 20171028 :)
-          zoom: 9,
           maxZoom: 16
         });
+
+        // try to fit the entire continental US in the map view
+        map.fitBounds([
+          [23.54, -131.2],
+          [50.39, -62.62]
+        ]);
 
         // Add Wx4Me disclaimer to map attribution control
         map.attributionControl.addAttribution('<a href="https://wx4.me/ds" target="_blank" style="color: red; text-decoration: underline;">Disclaimer</a> - For more information, visit <a href="https://wx4.me" target="_blank" style="color: red; text-decoration: underline;">Weather4Me</a>');
