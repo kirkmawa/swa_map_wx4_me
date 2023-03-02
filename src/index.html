@@ -212,7 +212,11 @@
 
               // Check for tstorm damage threat and include if found
               if (feature.properties.parameters.thunderstormDamageThreat) {
-                thunderstormDamageThreat = "<b>Thunderstorm Damage Threat: " + feature.properties.parameters.thunderstormDamageThreat[0] + "</b><br />";
+                if (feature.properties.parameters.thunderstormDamageThreat == "DESTRUCTIVE") {
+                  thunderstormDamageThreat = "<b>Thunderstorm Damage Threat: <span style='color: maroon;'>" + feature.properties.parameters.thunderstormDamageThreat[0] + "</span></b><br />";
+                } else {
+                  thunderstormDamageThreat = "<b>Thunderstorm Damage Threat: " + feature.properties.parameters.thunderstormDamageThreat[0] + "</b><br />";
+                }
               }
 
               // Check for tornadoDetection tag
