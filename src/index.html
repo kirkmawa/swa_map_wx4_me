@@ -159,7 +159,7 @@
           window.watchdisp = new L.geoJSON(watchinfo, {
             style: function(feature) {
               // Tornado watch
-              if (feature.properties.phenom = "TO") {
+              if (feature.properties.phenom == "TO") {
                 return {color: "#ffccff", pane: "toaPane"};
               }
 
