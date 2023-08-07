@@ -124,7 +124,7 @@
           try {
             window.location.hash = "#" + parentPolygon.feature.properties.parameters.VTEC[0].replace(/\//g, '').replace(/\./g, '-');
           } catch(error) {
-            console.log("Parent polygon does not have feature parameters")
+            console.log("Parent polygon does not have feature parameters");
           }
         });
 
@@ -156,7 +156,7 @@
         console.log("Loading severe thunderstorm and tornado watches...");
 
         //var watchxhr = $.getJSON("https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/1/query?where=%28phenom%3D%27TO%27+or+phenom%3D%27SV%27%29+and+sig%3D%27A%27&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Foot&outFields=*&returnGeometry=true&returnTrueCurves=false&outSR=returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentOnly=false&featureEncoding=esriDefault&f=geojson", function(data) {
-          var watchxhr = $.getJSON("https://mapservices.weather.noaa.gov/eventdriven/rest/services/WWA/watch_warn_adv/MapServer/1/query?where=%28phenom%3D%27TO%27+or+phenom%3D%27SV%27%29+and+sig%3D%27A%27&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Foot&outFields=*&returnGeometry=true&returnTrueCurves=false&outSR=returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentOnly=false&featureEncoding=esriDefault&f=geojson", function(data) {
+        var watchxhr = $.getJSON("https://mapservices.weather.noaa.gov/eventdriven/rest/services/WWA/watch_warn_adv/MapServer/1/query?where=%28phenom%3D%27TO%27+or+phenom%3D%27SV%27%29+and+sig%3D%27A%27&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Foot&outFields=*&returnGeometry=true&returnTrueCurves=false&outSR=returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentOnly=false&featureEncoding=esriDefault&f=geojson", function(data) {
           watchinfo = data;
         }).done(function() {
 
@@ -494,8 +494,8 @@
     <div id="map"></div>
     <div id="logoContainer">
       <img src="images/wx4me_banner_2020.png" height="50" /><br>
-      <div style="text-align: center; margin-top: 2px;">
-        <button id="leg-show-link">Show Legend</button>&nbsp;<button id="leg-hide-link">Hide Legend</button>
+      <div style="text-align: center; margin-top: 2px; font-size: 10px;">
+        Legend: <span id="leg-show-link">show</span>&nbsp;|&nbsp;<span id="leg-hide-link">hide</span>
       </div>
     </div>
     <div id="blockedWarning">Reload blocked due to open popup!</div>
