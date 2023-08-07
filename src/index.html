@@ -201,7 +201,7 @@
         allPolygons = {};
         
         // Get GeoJSON object from NWS API
-        var wwaxhr = $.getJSON("https://api.weather.gov/alerts?active=true", function (data) {
+        var wwaxhr = $.getJSON("https://api.weather.gov/alerts/active?event=Tornado%20Warning,Severe%20Thunderstorm%20Warning,Flash%20Flood%20Warning", function (data) {
           wwainfo = data;
         }).done(function () {
           // Add polygon display layer
@@ -224,22 +224,11 @@
                 return {color: "#ff9900", pane: "pdsSvrPane"};
               }
 
-              // todo: orange for PDS svr, hotpink for PDS tor
-
               // Standard polygon colors
               switch (feature.properties.event) {
                 case 'Severe Thunderstorm Warning': return {color: "#ffff00", pane: "svrPane"};
                 case 'Tornado Warning': return {color: "#ff0000", pane: "torPane"};
                 case 'Flash Flood Warning': return {color: "#008800", pane: "ffwPane"};
-              }
-            },
-
-            // We only want tornado/severe tstorm/flash flood warnings for now
-            filter: function(feature, layer) {
-              if (feature.properties.event == "Tornado Warning" || feature.properties.event == "Severe Thunderstorm Warning" || feature.properties.event == "Flash Flood Warning") {
-                return true;
-              } else {
-                return false;
               }
             },
 
@@ -252,6 +241,7 @@
               var thunderstormDamageThreat = "";
               var tornadoDetection = "";
               var tornadoDamageThreat = "";
+              var nwsHeadline = "";
 
               // Check for max wind gust and include if found
               if (feature.properties.parameters.maxWindGust) {
@@ -282,9 +272,14 @@
                 tornadoDamageThreat = "<b style='color: maroon;'>Tornado Damage Threat: " + feature.properties.parameters.tornadoDamageThreat[0] + "</b><br />";
               }
 
+              // Prepend NWS headline to warning text if it's there
+              if (feature.properties.parameters.NWSheadline) {
+                nwsHeadline = "*** " + feature.properties.parameters.NWSheadline[0] + "...\n\n";
+              }
+
               // Construct the popup and its contents
               layer.bindPopup(
-                "<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+tornadoDamageThreat+"</span><pre>"+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>",
+                "<h2>"+feature.properties.event+"</h2><span style='font-size: 12px;'>"+feature.properties.headline+"<br />"+windThreat+hailThreat+thunderstormDamageThreat+tornadoDetection+tornadoDamageThreat+"</span><pre>"+nwsHeadline+feature.properties.description+"\n\n"+feature.properties.instruction+"</pre>",
                 {
                   maxWidth: maxPopupWidth, 
                   maxHeight: maxPopupHeight
