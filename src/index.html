@@ -121,8 +121,10 @@
 
           // Replace URL fragment with VTEC of event for permalinking
           parentPolygon = event.popup._source;
-          if (parentPolygon.feature.properties.parameters.VTEC) {
+          try {
             window.location.hash = "#" + parentPolygon.feature.properties.parameters.VTEC[0].replace(/\//g, '').replace(/\./g, '-');
+          } catch(error) {
+            console.log("Parent polygon does not have feature parameters")
           }
         });
 
