@@ -95,6 +95,10 @@
         toaPane = map.createPane("toaPane");
         svaPane = map.createPane("svaPane");
 
+        // Hide watch panes by default
+        toaPane.hidden = true;
+        svaPane.hidden = true;
+
         // Set pane z-index values
         ffwPane.style.zIndex = 401;
         svrPane.style.zIndex = 402;
@@ -377,6 +381,22 @@
           map.addControl(legendControl);
         });
 
+        $("#sva-hide-link").on('click', function() {
+          map.getPane('svaPane').hidden = true;
+        }); 
+
+        $("#sva-show-link").on('click', function() {
+          map.getPane('svaPane').hidden = false;
+        });
+
+        $("#toa-hide-link").on('click', function() {
+          map.getPane('toaPane').hidden = true;
+        }); 
+
+        $("#toa-show-link").on('click', function() {
+          map.getPane('toaPane').hidden = false;
+        });
+
         // Set reload intervals of 1 minute for warning polygons and 5 minutes for NEXRAD
         warnreloadInterval = setInterval(reloadWarningMap, 60000);
         nexradreloadInterval = setInterval(reloadNexrad, 300000);
@@ -475,6 +495,11 @@
         background-color: rgba(255, 255, 255, 1);
       }
 
+      .showhidelink {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+
     </style>
 
     <!-- MS Clarity analytics -->
@@ -495,7 +520,9 @@
     <div id="logoContainer">
       <img src="images/wx4me_banner_2020.png" height="50" /><br>
       <div style="text-align: center; margin-top: 2px; font-size: 10px;">
-        Legend: <span id="leg-show-link">show</span>&nbsp;|&nbsp;<span id="leg-hide-link">hide</span>
+        Severe Thunderstorm Watches: <span id="sva-show-link" class="showhidelink">show</span>&nbsp;|&nbsp;<span id="sva-hide-link" class="showhidelink">hide</span><br />
+        Tornado Watches: <span id="toa-show-link" class="showhidelink">show</span>&nbsp;|&nbsp;<span id="toa-hide-link" class="showhidelink">hide</span><br />
+        Legend: <span id="leg-show-link" class="showhidelink">show</span>&nbsp;|&nbsp;<span id="leg-hide-link" class="showhidelink">hide</span>
       </div>
     </div>
     <div id="blockedWarning">Reload blocked due to open popup!</div>
