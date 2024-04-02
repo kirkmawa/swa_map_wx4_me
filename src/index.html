@@ -176,8 +176,31 @@
       function loadWatches() {
         console.log("Loading severe thunderstorm and tornado watches...");
 
-        //var watchxhr = $.getJSON("https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/1/query?where=%28phenom%3D%27TO%27+or+phenom%3D%27SV%27%29+and+sig%3D%27A%27&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Foot&outFields=*&returnGeometry=true&returnTrueCurves=false&outSR=returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentOnly=false&featureEncoding=esriDefault&f=geojson", function(data) {
-        var watchxhr = $.getJSON("https://mapservices.weather.noaa.gov/eventdriven/rest/services/WWA/watch_warn_adv/MapServer/1/query?where=%28phenom%3D%27TO%27+or+phenom%3D%27SV%27%29+and+sig%3D%27A%27&geometryType=esriGeometryPolygon&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Foot&outFields=*&returnGeometry=true&returnTrueCurves=false&outSR=returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentOnly=false&featureEncoding=esriDefault&f=geojson", function(data) {
+        // Map layer options
+        watchMapOptions = {
+          "where": "(phenom='TO' or phenom='SV') and sig='A'",
+          "geometryType": "esriGeometryPolygon",
+          "spatialRel": "esriSpatialRelIntersects",
+          "units": "esriSRUnit_Foot",
+          "outFields": "*",
+          "returnGeometry": "true",
+          "returnTrueCurves": "false",
+          "outSR": "",
+          "returnIdsOnly": "false",
+          "returnCountOnly": "false",
+          "returnZ": "false",
+          "returnM": "false",
+          "returnDistinctValues": "false",
+          "returnExtentOnly": "false",
+          "featureEncoding": "esriDefault",
+          "f": "geojson"
+        };
+
+        // Construct URLSearchParams Object
+        watchMapQuery = new URLSearchParams(watchMapOptions);
+
+        // Grab watch data layer
+        var watchxhr = $.getJSON(`https://mapservices.weather.noaa.gov/eventdriven/rest/services/WWA/watch_warn_adv/MapServer/1/query?${watchMapQuery.toString()}`, function(data) {
           watchinfo = data;
         }).done(function() {
 
@@ -216,9 +239,17 @@
         
         // Clear allPolygons object
         allPolygons = {};
+
+        // WWA options
+        wwaOptions = {
+          "event": "Tornado Warning,Severe Thunderstorm Warning,Flash Flood Warning"
+        };
+
+        // WWA URLSearchParams object
+        wwaQuery = new URLSearchParams(wwaOptions);
         
         // Get GeoJSON object from NWS API
-        var wwaxhr = $.getJSON("https://api.weather.gov/alerts/active?event=Tornado%20Warning,Severe%20Thunderstorm%20Warning,Flash%20Flood%20Warning", function (data) {
+        var wwaxhr = $.getJSON(`https://api.weather.gov/alerts/active?${wwaQuery.toString()}`, function (data) {
           wwainfo = data;
         }).done(function () {
           // Add polygon display layer
